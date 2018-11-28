@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
+import fr.fapshop.chatanytime.ui.createroom.CreateRoomFragment;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -39,15 +41,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final UUID MY_UUID = UUID.fromString("203ed53a-8a64-4bfd-a496-7d835c863bff");
     private IntentFilter filter;
     private IntentFilter intentFilter;
-    private BluetoothAdapter mBluetoothAdapter;
+    public static BluetoothAdapter mBluetoothAdapter;
     private BluetoothChatService mChatService;
 
     private String mConnectedDeviceName = null;
     private Activity myActivity;
 
     private ListView lvRooms;
-    private ArrayList<RoomInfos> roomList;
+    public static ArrayList<RoomInfos> roomList;
+
     private ArrayList<RoomClient> currentRoomClients;
+    private BluetoothChatService[] bluetoothChatServices;
+
+    public static String roomName;
+    public static String pseudo;
+
+    public static RoomInfos currentRoom;
+
+    public static boolean createRoom;
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -65,27 +76,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.enable();
         }
-        mBluetoothAdapter.setName("CA:Room1:666");
         Intent discoverableIntent =
                 new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 3600);
         startActivity(discoverableIntent);
-        //mBluetoothAdapter.enable();
 
-        mChatService = new BluetoothChatService(this, mHandler);
-        mChatService.start();
+        //mChatService = new BluetoothChatService(this, mHandler);
+        //mChatService.start();
 
         int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                 MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
 
-        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-
-        Button btnClient = findViewById(R.id.btnClient);
-        Button btnServer = findViewById(R.id.btnServer);
-        btnClient.setOnClickListener(this);
-        btnServer.setOnClickListener(this);
+        Button btnConnectRoom = findViewById(R.id.btnConnectRoom);
+        Button btnCreateRoom = findViewById(R.id.btnCreateRoom);
+        btnConnectRoom.setOnClickListener(this);
+        btnCreateRoom.setOnClickListener(this);
 
         lvRooms = findViewById(R.id.lvRooms);
         lvRooms.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -99,42 +106,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         roomList = new ArrayList<>();
 
+        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         registerReceiver(mReceiver, filter);
-        while(!mBluetoothAdapter.isEnabled());
-        boolean ok = mBluetoothAdapter.startDiscovery();
-        Log.d(TAG, String.valueOf(ok));
 
         intentFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
         intentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         registerReceiver(broadCastReceiver, intentFilter);
+
+        mBluetoothAdapter.startDiscovery();
     }
 
     public void onClick(View v) {
         switch (v.getId()) {
-            case  R.id.btnClient: {
-                // do something for button 1 click
-                //Log.d(TAG, "gonna list !");
-                //Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            case  R.id.btnConnectRoom: {
 
-                /*if (pairedDevices.size() > 0) {
-                    // There are paired devices. Get the name and address of each paired device.
-                    for (BluetoothDevice device : pairedDevices) {
-                        String deviceName = device.getName();
-                        String deviceHardwareAddress = device.getAddress(); // MAC address
-                        Log.d(TAG, "Op : dn : " + deviceName + " | mac : " + deviceHardwareAddress);
-                    }
-                }*/
                 break;
             }
 
-            case R.id.btnServer: {
+            case R.id.btnCreateRoom: {
                 // do something for button 2 click
                 Toast.makeText(myActivity, "send toast", Toast.LENGTH_LONG).show();
                 mChatService.write("toast".getBytes());
+                createRoom = true;
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, CreateRoomFragment.newInstance())
+                        .commitNow();
                 break;
             }
 
             //.... etc
+        }
+    }
+
+    public void initBluetoothConnections(String roomName, String pseudo){
+        mBluetoothAdapter.setName("CA:"+roomName+":"+pseudo);
+        bluetoothChatServices = new BluetoothChatService[3];
+        openBluetoothConnection();
+    }
+
+    private void resetBluetoothConnections(){
+        for(int i = 0 ; i < 3 ; i++){
+            if(bluetoothChatServices[i] != null) {
+                if(bluetoothChatServices[i].getState() != BluetoothChatService.STATE_NONE)
+                    bluetoothChatServices[i].stop();
+                break;
+            }
+        }
+    }
+
+    private void openBluetoothConnection(){
+        for(int i = 0 ; i < 3 ; i++){
+            if(bluetoothChatServices[i] != null) {
+                if(bluetoothChatServices[i].getState() != BluetoothChatService.STATE_NONE)
+                    continue;
+                bluetoothChatServices[i] = new BluetoothChatService(myActivity, mHandler, i);
+                bluetoothChatServices[i].start();
+                break;
+            }
         }
     }
 
@@ -153,30 +182,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String[] tmp = deviceName.split(":");
                     if(tmp.length != 3)
                         return;
-                    Log.d(TAG, "onRecdddeive: " + String.valueOf(tmp.length) + " : " + tmp[1]);
+                    Log.d(TAG, "onReceive: " + String.valueOf(tmp.length) + " : " + tmp[1]);
                     if(!tmp[0].equals("CA"))
                         return;
 
                     String roomName = tmp[1];
                     boolean newRoom = true;
-                    for(RoomInfos ri : roomList) {
-                        if (ri.name.equals(roomName)) {
-                            ri.clients.add(new RoomClient(deviceHardwareAddress, ConnectionProtocol.Bluetooth, device));
-                            newRoom = false;
-                            break;
+                    if (currentRoom != null) {
+                        for (RoomInfos ri : roomList) {
+                            if (ri.name.equals(currentRoom.name)) {
+                                boolean clientExist = false;
+                                for(RoomClient rc : ri.clients){
+                                    if(rc.addr.equals(deviceHardwareAddress))
+                                        clientExist = true;
+                                }
+                                if(!clientExist) {
+                                    ri.clients.add(new RoomClient(deviceHardwareAddress, ConnectionProtocol.Bluetooth, device));
+                                    break;
+                                }
+                            }
                         }
                     }
-                    if(newRoom){
-                        RoomInfos tmpRoom = new RoomInfos(roomName);
-                        tmpRoom.clients.add(new RoomClient(deviceHardwareAddress, ConnectionProtocol.Bluetooth, device));
-                        roomList.add(tmpRoom);
+                    else {
+                        for (RoomInfos ri : roomList) {
+                            if (ri.name.equals(roomName)) {
+                                boolean clientExist = false;
+                                for(RoomClient rc : ri.clients){
+                                    if(rc.addr.equals(deviceHardwareAddress))
+                                        clientExist = true;
+                                }
+                                if(!clientExist) {
+                                    ri.clients.add(new RoomClient(deviceHardwareAddress, ConnectionProtocol.Bluetooth, device));
+                                    newRoom = false;
+                                    break;
+                                }
+                                break;
+                            }
+                        }
+                        if (newRoom) {
+                            RoomInfos tmpRoom = new RoomInfos(roomName);
+                            tmpRoom.clients.add(new RoomClient(deviceHardwareAddress, ConnectionProtocol.Bluetooth, device));
+                            roomList.add(tmpRoom);
+                        }
                     }
                 }
 
-
-                RoomListAdapter roomListAdapter = new RoomListAdapter(myActivity, 0, roomList);
-
-                lvRooms.setAdapter(roomListAdapter);
+                if(currentRoom == null) {
+                    RoomListAdapter roomListAdapter = new RoomListAdapter(myActivity, 0, roomList);
+                    lvRooms.setAdapter(roomListAdapter);
+                }
             }
         }
     };
@@ -204,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
+        MainActivity.mBluetoothAdapter.cancelDiscovery();
     }
 
 
@@ -266,7 +321,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void connectToRoom(RoomInfos roomInfos){
         if(roomInfos.clients.get(0).protocol == ConnectionProtocol.Bluetooth){
-            mChatService.connect((BluetoothDevice)roomInfos.clients.get(0).connectionObject, false);
+            createRoom = false;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, CreateRoomFragment.newInstance())
+                    .commitNow();
+
+            currentRoom = roomInfos;
+            currentRoomClients = roomInfos.clients;
+            //mChatService.connect((BluetoothDevice)roomInfos.clients.get(0).connectionObject, false);
         }
     }
 }

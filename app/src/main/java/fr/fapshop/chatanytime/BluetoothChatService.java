@@ -31,6 +31,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+class HandlerObject{
+    public byte[] buffer;
+    public BluetoothChatService sender;
+
+    public HandlerObject(byte[] buffer, BluetoothChatService sender){
+        this.buffer = buffer;
+        this.sender = sender;
+    }
+}
+
 /**
  * This class does all the work for setting up and managing Bluetooth
  * connections with other devices. It has a thread that listens for
@@ -60,6 +70,9 @@ public class BluetoothChatService {
     private ConnectedThread mConnectedThread;
     private int mState;
     private int mNewState;
+    private int index;
+
+    private BluetoothChatService instance;
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -73,11 +86,13 @@ public class BluetoothChatService {
      * @param context The UI Activity Context
      * @param handler A Handler to send messages back to the UI Activity
      */
-    public BluetoothChatService(Context context, Handler handler) {
+    public BluetoothChatService(Context context, Handler handler, int index) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mNewState = mState;
         mHandler = handler;
+        this.index = index;
+        instance = this;
     }
 
     /**
@@ -494,7 +509,8 @@ public class BluetoothChatService {
                     bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
+                    HandlerObject tmp = new HandlerObject(buffer, instance);
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, tmp)
                             .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
@@ -514,7 +530,8 @@ public class BluetoothChatService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
+                HandlerObject tmp = new HandlerObject(buffer, instance);
+                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, tmp)
                         .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);

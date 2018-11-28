@@ -8,6 +8,7 @@ class RoomClient{
     public String addr;
     public ConnectionProtocol protocol;
     public Object connectionObject;
+    public ConnectionWrapper connectionWrapper;
 
     public RoomClient(String addr, ConnectionProtocol protocol, Object connectionObject){
         this.addr = addr;

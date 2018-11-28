@@ -15,7 +15,7 @@
         tools:layout_editor_absoluteX="8dp">
 
         <Button
-            android:id="@+id/btnServer"
+            android:id="@+id/btnCreateRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create new room"
@@ -23,7 +23,7 @@
             tools:layout_editor_absoluteY="47dp" />
 
         <Button
-            android:id="@+id/btnClient"
+            android:id="@+id/btnConnectRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Connect to room"
