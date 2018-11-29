@@ -63,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
             tryConnect();
         }
         else{
-            blockchain.addFirstBlock("Room " + roomName + " created !");
+            blockchain.addFirstBlock("Room " + roomName + " created !", pseudo);
         }
 
         new android.os.Handler().postDelayed(
@@ -279,14 +279,10 @@ public class ChatActivity extends AppCompatActivity {
                     JSONArray data = j.getJSONArray("data");
                     for (int i = 0; i < data.length(); i++) {
                         JSONObject jsonObject = data.getJSONObject(i);
-                        int tmpIndex = jsonObject.getInt("index");
-                        String tmpData = jsonObject.getString("data");
-                        long tmpTimestamp = jsonObject.getLong("timestamp");
-                        String tmpHash = jsonObject.getString("hash");
-                        String tmpPreviousHash = jsonObject.getString("previousHash");
-                        Block tmpBlock = new Block(tmpIndex, tmpTimestamp, tmpHash, tmpPreviousHash, tmpData);
+                        Block tmpBlock = Block.jsonToBlock(jsonObject);
                         blockchain.addBlock(tmpBlock, true);
                     }
+                    Toast.makeText(this, "get blocks !!!!!!", Toast.LENGTH_LONG);
                 }
             }
         } catch (JSONException e) {

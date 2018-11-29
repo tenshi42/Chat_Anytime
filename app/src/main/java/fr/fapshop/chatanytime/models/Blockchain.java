@@ -21,8 +21,8 @@ public class Blockchain {
         blocks.add(b);*/
     }
 
-    public void addFirstBlock(String data){
-        Block b = new Block(0, System.currentTimeMillis(), null, data);
+    public void addFirstBlock(String data, String user){
+        Block b = new Block(0, System.currentTimeMillis(), null, data, user);
         b.mineBlock(difficulty);
         blocks.add(b);
     }
@@ -38,7 +38,7 @@ public class Blockchain {
     public Block newBlock(String data) {
         Block latestBlock = latestBlock();
         return new Block(latestBlock.getIndex() + 1, System.currentTimeMillis(),
-                latestBlock.getHash(), data);
+                latestBlock.getHash(), data, latestBlock.getUser());
     }
 
     public void addBlock(Block b) {

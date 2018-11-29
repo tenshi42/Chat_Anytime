@@ -5,50 +5,65 @@
     android:id="@+id/createroom"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:foregroundGravity="center_vertical|center_horizontal"
     tools:context=".ui.createroom.CreateRoomFragment">
 
-    <TextView
-        android:id="@+id/tvTitle"
+    <LinearLayout
+        android:id="@+id/ll1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Room name :"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="122dp"
-        tools:layout_editor_absoluteY="129dp" />
+        android:background="@color/colorAccent"
+        android:elevation="1000dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical"
+        android:padding="30dp"
+        tools:background="@android:color/holo_blue_dark"
+        tools:layout_editor_absoluteX="50dp"
+        tools:layout_editor_absoluteY="50dp">
 
-    <Button
-        android:id="@+id/btnRoomCreate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="289dp" />
+        <TextView
+            android:id="@+id/tvPseudo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pseudo :"
+            android:textSize="24sp"
+            tools:layout_editor_absoluteX="147dp"
+            tools:layout_editor_absoluteY="211dp" />
 
-    <TextView
-        android:id="@+id/tvPseudo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pseudo :"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="211dp" />
+        <EditText
+            android:id="@+id/etPseudo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            tools:layout_editor_absoluteX="84dp"
+            tools:layout_editor_absoluteY="243dp" />
 
-    <EditText
-        android:id="@+id/etRoomName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        tools:layout_editor_absoluteX="84dp"
-        tools:layout_editor_absoluteY="161dp" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Room name :"
+            android:textSize="24sp"
+            tools:layout_editor_absoluteX="122dp"
+            tools:layout_editor_absoluteY="129dp" />
 
-    <EditText
-        android:id="@+id/etPseudo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        tools:layout_editor_absoluteX="84dp"
-        tools:layout_editor_absoluteY="243dp" />
+        <EditText
+            android:id="@+id/etRoomName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            tools:layout_editor_absoluteX="84dp"
+            tools:layout_editor_absoluteY="161dp" />
+
+        <Button
+            android:id="@+id/btnRoomCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create"
+            tools:layout_editor_absoluteX="148dp"
+            tools:layout_editor_absoluteY="289dp" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

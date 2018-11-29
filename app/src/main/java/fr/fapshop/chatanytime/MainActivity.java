@@ -126,11 +126,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.btnCreateRoom: {
                 // do something for button 2 click
-                Toast.makeText(myActivity, "send toast", Toast.LENGTH_LONG).show();
-                mChatService.write("toast".getBytes());
+                //Toast.makeText(myActivity, "send toast", Toast.LENGTH_LONG).show();
+                //mChatService.write("toast".getBytes());
                 createRoom = true;
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, CreateRoomFragment.newInstance())
+                        .replace(R.id.mal, CreateRoomFragment.newInstance())
                         .commitNow();
                 break;
             }
@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(roomInfos.clients.get(0).protocol == ConnectionProtocol.Bluetooth){
             createRoom = false;
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, CreateRoomFragment.newInstance())
+                    .replace(R.id.mal, CreateRoomFragment.newInstance())
                     .commitNow();
 
             currentRoom = roomInfos;

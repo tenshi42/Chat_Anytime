@@ -18,24 +18,27 @@ public class Block {
     private String hash;
     private String previousHash;
     private String data;
+    private String user;
     private int nonce;
 
-    public Block(int index, long timestamp, String previousHash, String data) {
+    public Block(int index, long timestamp, String previousHash, String data, String user) {
         this.index = index;
         this.timestamp = timestamp;
         this.previousHash = previousHash;
         this.data = data;
         nonce = 0;
         hash = Block.calculateHash(this);
+        this.user = user;
     }
 
-    public Block(int index, long timestamp, String hash, String previousHash, String data) {
+    public Block(int index, long timestamp, String hash, String previousHash, String data, String user) {
         this.index = index;
         this.timestamp = timestamp;
         this.previousHash = previousHash;
         this.data = data;
         nonce = 0;
         this.hash = hash;
+        this.user = user;
     }
 
     public int getIndex() {
@@ -58,8 +61,12 @@ public class Block {
         return data;
     }
 
+    public String getUser() {
+        return user;
+    }
+
     public String str() {
-        return index + timestamp + previousHash + data + nonce;
+        return index + timestamp + previousHash + data + nonce + user;
     }
 
     public String toString() {
@@ -78,6 +85,7 @@ public class Block {
             j.put("timestamp", timestamp);
             j.put("data", data);
             j.put("hash", hash);
+            j.put("user", user);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -125,6 +133,22 @@ public class Block {
             nonce++;
             hash = Block.calculateHash(this);
         }
+    }
+
+    public static Block jsonToBlock(JSONObject jsonObject){
+        Block tmpBlock = null;
+        try {
+            int tmpIndex = jsonObject.getInt("index");
+            String tmpData = jsonObject.getString("data");
+            String tmpUser = jsonObject.getString("user");
+            long tmpTimestamp = jsonObject.getLong("timestamp");
+            String tmpHash = jsonObject.getString("hash");
+            String tmpPreviousHash = jsonObject.getString("previousHash");
+            tmpBlock = new Block(tmpIndex, tmpTimestamp, tmpHash, tmpPreviousHash, tmpData, tmpUser);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return tmpBlock;
     }
 
 }
