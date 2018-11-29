@@ -151,4 +151,7 @@ public class Block {
         return tmpBlock;
     }
 
+    public String getTimeStampString(){
+        return String.valueOf(timestamp);
+    }
 }

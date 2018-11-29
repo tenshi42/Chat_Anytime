@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/tvUser"
+        android:layout_width="80dp"
+        android:layout_height="46dp"
+        android:layout_margin="20dp"
+        android:padding="20dp"
+        android:text="TextView"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="23dp" />
+
+    <TextView
+        android:id="@+id/tvMessageData"
+        android:layout_width="300dp"
+        android:layout_height="64dp"
+        android:layout_margin="20dp"
+        android:padding="20dp"
+        android:text="TextView"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="80dp"
+        tools:layout_editor_absoluteY="27dp" />
+
+    <TextView
+        android:id="@+id/tvTimeStampBlock"
+        android:layout_width="78dp"
+        android:layout_height="22dp"
+        android:layout_margin="20dp"
+        android:padding="20dp"
+        android:text="TextView"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="2dp"
+        tools:layout_editor_absoluteY="69dp" />
+</android.support.constraint.ConstraintLayout>

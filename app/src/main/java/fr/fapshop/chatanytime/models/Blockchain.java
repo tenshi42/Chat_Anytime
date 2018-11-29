@@ -1,7 +1,6 @@
 package fr.fapshop.chatanytime.models;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,4 +130,9 @@ public class Blockchain {
     public String toJsonString(){
         return toJson().toString();
     }
+
+    public List<Block> getBlocks(){
+        return blocks;
+    }
+
 }
